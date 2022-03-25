@@ -43,12 +43,63 @@ Matrix4x4 createPerspectiveMatrix(float fovy, float aspect, float near, float fa
 }
 
 Matrix4x4 createWorldToCameraMatrix(const Vector3D& eye, const Vector3D& at, const Vector3D& up) {
-
   // TODO CS248 Part 1: Coordinate transform
   // Compute the matrix that transforms a point in world space to a point in camera space.
+  /*
+   * zaxis = normal(eye - at) // forward
+   * xaxis = normal(cross(up, zaxis)) // right
+   * yaxis = cross(zaxis, xaxis) // up
+   */
+  Vector3D zaxis = (eye - at); // forward
+  zaxis.normalize();
+  Vector3D xaxis = cross(up, zaxis); // right
+  xaxis.normalize();
+  Vector3D yaxis = cross(zaxis, xaxis); // up 
 
-  return Matrix4x4::translation(Vector3D(-20,0,-150));
+  Matrix4x4 m;
+  m[0][0] = xaxis.x; 
+  m[0][1] = yaxis.x;
+  m[0][2] = zaxis.x;
+  m[0][3] = 0.f;
 
+  m[1][0] = xaxis.y;  
+  m[1][1] = yaxis.y;
+  m[1][2] = zaxis.y;
+  m[1][3] = 0.f;
+
+  m[2][0] = xaxis.z;
+  m[2][1] = yaxis.z;
+  m[2][2] = zaxis.z;
+  m[2][3] = 0.f;
+
+  m[3][0] = 0.f;
+  m[3][1] = 0.f;
+  m[3][2] = 0.f;
+  m[3][3] = 1.0f;
+
+  Matrix4x4 translation;
+  m[0][0] = 1.0f;
+  m[0][1] = 0.f;
+  m[0][2] = 0.f; 
+  m[0][3] = 0.f;
+
+  m[1][0] = 0.0f;
+  m[1][1] = 1.0f;
+  m[1][2] = 0.0f;
+  m[1][3] = 0.f;
+
+  m[2][0] = 0.f;
+  m[2][1] = 0.f;
+  m[2][2] = 1.f;
+  m[2][3] = 0.f;
+
+  m[3][0] = -1 * eye.x;
+  m[3][1] = -1 * eye.y;
+  m[3][2] = -1 * eye.z;
+  m[3][3] = 1.0f;
+
+
+  return m;
 }
 
 // Creates two triangles (6 positions, 18 floats) making up a square
